@@ -153,7 +153,7 @@ else
     info "Downloading Caffeine..."
     mkdir -p "$HOME/Applications"
     CAFFEINE_ZIP="/tmp/Caffeine.zip"
-    curl -fSL -o "$CAFFEINE_ZIP" "https://www.caffeine-app.net/Caffeine.zip"
+    curl -fSL -o "$CAFFEINE_ZIP" "https://www.caffeine-app.net/download/tahoe/"
 
     info "Installing Caffeine to ~/Applications..."
     unzip -qo "$CAFFEINE_ZIP" -d "$HOME/Applications/"
