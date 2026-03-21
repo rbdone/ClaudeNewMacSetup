@@ -220,8 +220,11 @@ if command_exists claude; then
     warn "Claude Code already installed."
     SKIPPED+=("Claude Code")
 else
-    info "Installing Claude Code globally..."
+    info "Installing Claude Code via npm..."
     npm install -g @anthropic-ai/claude-code
+
+    info "Installing Claude Code native build..."
+    claude install
     success "Claude Code installed."
     INSTALLED+=("Claude Code")
 fi
