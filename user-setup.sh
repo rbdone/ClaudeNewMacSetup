@@ -158,6 +158,9 @@ else
     info "Installing Caffeine to ~/Applications..."
     unzip -qo "$CAFFEINE_ZIP" -d "$HOME/Applications/"
     rm -f "$CAFFEINE_ZIP"
+
+    # Remove quarantine attribute to prevent Gatekeeper "damaged" warning
+    xattr -dr com.apple.quarantine "$CAFFEINE_APP"
     success "Caffeine installed."
     INSTALLED+=("Caffeine")
 fi
