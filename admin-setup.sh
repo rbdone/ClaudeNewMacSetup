@@ -1,13 +1,29 @@
 #!/bin/bash
 # admin-setup.sh — Admin privileged setup for macOS developer workstations
 #
-# Run this script ONCE per machine as an admin user.
-# Usage: sudo ./admin-setup.sh
+# Run this script ONCE per machine as an admin user (do NOT use sudo).
+# Usage: ./admin-setup.sh
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/common.sh"
 
 is_macos
+
+# Must NOT run as root — Homebrew refuses to run as root
+if [[ "${EUID:-$(id -u)}" -eq 0 ]]; then
+    error "Do NOT run this script with sudo. Run as a normal admin user."
+    error "Usage: ./admin-setup.sh"
+    exit 1
+fi
+
+# Verify the user has admin privileges (member of the admin group)
+if ! groups | grep -qw admin; then
+    error "This script requires an admin user account."
+    error "Current user '$(whoami)' is not in the admin group."
+    exit 1
+fi
+
+# Prompt for sudo password upfront and keep it alive
 require_sudo
 
 BREW_PREFIX="$(brew_prefix)"

@@ -140,7 +140,44 @@ else
     warn "'git config --global user.email \"you@example.com\"' manually."
 fi
 
-# ── Step 5: Set Chrome as Default Browser ────────────────────────────────
+# ── Step 5: Caffeine ─────────────────────────────────────────────────────
+
+section "Caffeine"
+
+CAFFEINE_APP="$HOME/Applications/Caffeine.app"
+
+if [[ -d "$CAFFEINE_APP" ]]; then
+    warn "Caffeine already installed."
+    SKIPPED+=("Caffeine")
+else
+    info "Downloading Caffeine..."
+    mkdir -p "$HOME/Applications"
+    CAFFEINE_ZIP="/tmp/Caffeine.zip"
+    curl -fSL -o "$CAFFEINE_ZIP" "https://www.caffeine-app.net/Caffeine.zip"
+
+    info "Installing Caffeine to ~/Applications..."
+    unzip -qo "$CAFFEINE_ZIP" -d "$HOME/Applications/"
+    rm -f "$CAFFEINE_ZIP"
+    success "Caffeine installed."
+    INSTALLED+=("Caffeine")
+fi
+
+# Set Caffeine to activate on launch (stay awake indefinitely) and start at login
+defaults write com.lightheadsw.Caffeine SuppressLaunchMessage -bool true
+defaults write com.lightheadsw.Caffeine ActivateOnLaunch -bool true
+
+# Add Caffeine to login items so it starts automatically
+if ! osascript -e 'tell application "System Events" to get the name of every login item' 2>/dev/null | grep -q "Caffeine"; then
+    osascript -e 'tell application "System Events" to make login item at end with properties {path:"'"$CAFFEINE_APP"'", hidden:true}' 2>/dev/null
+    success "Caffeine added to login items."
+fi
+
+# Launch Caffeine now (it will activate immediately due to ActivateOnLaunch)
+info "Launching Caffeine..."
+open -a "$CAFFEINE_APP"
+success "Caffeine is running — Mac will stay awake indefinitely."
+
+# ── Step 6: Set Chrome as Default Browser ─────────────────────────────────
 
 section "Default Browser"
 
@@ -154,7 +191,7 @@ else
     warn "Google Chrome not installed. Skipping default browser setup."
 fi
 
-# ── Step 6: Configure Dock ────────────────────────────────────────────────
+# ── Step 7: Configure Dock ────────────────────────────────────────────────
 
 section "Dock Configuration"
 
@@ -185,7 +222,7 @@ killall Dock
 success "Dock configured with Finder, Chrome, WebStorm, and Terminal."
 INSTALLED+=("Dock configuration")
 
-# ── Step 7: Verification ─────────────────────────────────────────────────
+# ── Step 8: Verification ─────────────────────────────────────────────────
 
 section "Verification"
 

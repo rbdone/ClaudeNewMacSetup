@@ -29,6 +29,7 @@ These are installed per-user with no admin privileges required:
 | nvm | Node Version Manager — install and switch Node versions |
 | Node.js LTS | Latest LTS release via nvm (used for development) |
 | Git config | Interactive prompts for user.name and user.email |
+| Caffeine | Prevents Mac from sleeping — auto-starts at login, stays on indefinitely |
 | Default browser | Sets Google Chrome as the default browser |
 | Dock configuration | Sets Dock to Finder, Chrome, WebStorm, and Terminal only |
 
@@ -42,7 +43,13 @@ These are installed per-user with no admin privileges required:
 
 ### Step 1: Admin Setup (once per machine)
 
-Log in as an admin user, clone the repo, and run:
+Log in as an admin user and install the Xcode Command Line Tools first (provides `git`, compilers, and other essentials):
+
+```bash
+xcode-select --install
+```
+
+A macOS dialog will appear — click "Install" and wait for it to complete. Then clone the repo and run the admin script:
 
 ```bash
 git clone https://github.com/rbdone/ClaudeNewMacSetup.git
@@ -51,9 +58,13 @@ chmod +x admin-setup.sh user-setup.sh
 ./admin-setup.sh
 ```
 
-The script will prompt for your password (sudo). It installs Xcode CLT, Homebrew, Docker Desktop, Google Chrome, WebStorm, Node.js, and Claude Code.
+**Do NOT use `sudo`** — run the script as a normal admin user. It will prompt for your password when needed. The script installs Homebrew, Docker Desktop, Google Chrome, WebStorm, Node.js, and Claude Code. It will skip Xcode CLT if already installed.
 
-> **Note:** The Xcode CLT step opens a macOS dialog — click "Install" and wait for it to complete. The script will detect when the installation finishes.
+**Running as admin from a non-admin account:** If you're logged in as a non-admin user but know the admin credentials, use `su` to switch to the admin account first. Use the admin's **short username** (no spaces) rather than their full name — find it with `dscl . -list /Users`:
+
+```bash
+su - adminusername -c "/path/to/ClaudeNewMacSetup/admin-setup.sh"
+```
 
 ### Step 2: User Setup (once per user)
 
