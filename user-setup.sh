@@ -106,7 +106,55 @@ nvm install --lts
 nvm alias default 'lts/*'
 success "Node.js LTS installed and set as default."
 
-# ── Step 4: Git Configuration ────────────────────────────────────────────
+# ── Step 4: GitHub CLI (gh) ───────────────────────────────────────────────
+
+section "GitHub CLI (gh)"
+
+if command_exists gh; then
+    warn "GitHub CLI already installed."
+    SKIPPED+=("GitHub CLI")
+else
+    info "Installing GitHub CLI..."
+    mkdir -p "$HOME/bin"
+
+    if is_arm64; then
+        GH_ARCH="macOS_arm64"
+    else
+        GH_ARCH="macOS_amd64"
+    fi
+
+    # Fetch latest version tag from GitHub API
+    GH_VERSION=$(curl -fsSL "https://api.github.com/repos/cli/cli/releases/latest" | grep '"tag_name"' | cut -d'"' -f4 | sed 's/^v//')
+
+    if [[ -z "$GH_VERSION" ]]; then
+        error "Could not determine latest gh version."
+    else
+        GH_TAR="/tmp/gh.tar.gz"
+        curl -fSL -o "$GH_TAR" "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_${GH_ARCH}.tar.gz"
+
+        tar -xzf "$GH_TAR" -C /tmp
+        cp "/tmp/gh_${GH_VERSION}_${GH_ARCH}/bin/gh" "$HOME/bin/gh"
+        chmod +x "$HOME/bin/gh"
+        rm -rf "$GH_TAR" "/tmp/gh_${GH_VERSION}_${GH_ARCH}"
+
+        success "GitHub CLI installed to ~/bin/gh."
+        INSTALLED+=("GitHub CLI")
+    fi
+
+    # Ensure ~/bin is in PATH
+    if ! echo "$PATH" | grep -q "$HOME/bin"; then
+        if ! grep -q 'HOME/bin' "$ZSHRC"; then
+            {
+                echo ""
+                echo "# User local binaries"
+                echo 'export PATH="$HOME/bin:$PATH"'
+            } >> "$ZSHRC"
+        fi
+        export PATH="$HOME/bin:$PATH"
+    fi
+fi
+
+# ── Step 5: Git Configuration ────────────────────────────────────────────
 
 section "Git Configuration"
 
@@ -140,7 +188,7 @@ else
     warn "'git config --global user.email \"you@example.com\"' manually."
 fi
 
-# ── Step 5: Caffeine ─────────────────────────────────────────────────────
+# ── Step 6: Caffeine ─────────────────────────────────────────────────────
 
 section "Caffeine"
 
@@ -180,7 +228,7 @@ info "Launching Caffeine..."
 open -a "$CAFFEINE_APP"
 success "Caffeine is running — Mac will stay awake indefinitely."
 
-# ── Step 6: Set Chrome as Default Browser ─────────────────────────────────
+# ── Step 7: Set Chrome as Default Browser ─────────────────────────────────
 
 section "Default Browser"
 
@@ -194,7 +242,7 @@ else
     warn "Google Chrome not installed. Skipping default browser setup."
 fi
 
-# ── Step 7: Configure Dock ────────────────────────────────────────────────
+# ── Step 8: Configure Dock ────────────────────────────────────────────────
 
 section "Dock Configuration"
 
@@ -225,7 +273,7 @@ killall Dock
 success "Dock configured with Finder, Chrome, WebStorm, and Terminal."
 INSTALLED+=("Dock configuration")
 
-# ── Step 8: Verification ─────────────────────────────────────────────────
+# ── Step 9: Verification ─────────────────────────────────────────────────
 
 section "Verification"
 
@@ -247,6 +295,7 @@ check_tool "Node.js" "node --version"
 check_tool "npm" "npm --version"
 check_tool "nvm" "nvm --version"
 check_tool "Git" "git --version"
+check_tool "GitHub CLI" "gh --version"
 check_tool "Zsh" "zsh --version"
 
 # Docker may not be running

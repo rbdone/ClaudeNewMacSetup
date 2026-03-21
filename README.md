@@ -28,6 +28,7 @@ These are installed per-user with no admin privileges required:
 | oh-my-zsh | Zsh framework with git plugin enabled |
 | nvm | Node Version Manager — install and switch Node versions |
 | Node.js LTS | Latest LTS release via nvm (used for development) |
+| GitHub CLI (gh) | GitHub CLI for PRs, issues, and repo management |
 | Git config | Interactive prompts for user.name and user.email |
 | Caffeine | Prevents Mac from sleeping — auto-starts at login, stays on indefinitely |
 | Default browser | Sets Google Chrome as the default browser |
