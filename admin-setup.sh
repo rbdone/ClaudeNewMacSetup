@@ -81,6 +81,17 @@ fi
 info "Setting Homebrew permissions for non-admin users..."
 sudo chmod -R a+rX "$BREW_PREFIX"
 
+# Fix zsh compinit insecure directory warnings
+# compinit flags directories/files not owned by root or the current user.
+# Since Homebrew is owned by the admin who installed it, other users
+# will see "insecure directories" warnings. Chown to root fixes this.
+info "Fixing zsh completion directory ownership..."
+sudo chown -R root:admin "$BREW_PREFIX/share/zsh"
+sudo chmod -R go-w "$BREW_PREFIX/share/zsh"
+# Also fix symlink targets (completions files in Cellar and completions dirs)
+sudo chown root:admin "$BREW_PREFIX/completions/zsh/"* 2>/dev/null || true
+find "$BREW_PREFIX/Cellar" -path "*/share/zsh/site-functions/*" -exec sudo chown root:admin {} \; 2>/dev/null || true
+
 # Make brew available in this session
 eval "$("$BREW_PREFIX/bin/brew" shellenv)"
 
