@@ -16,6 +16,7 @@ These require admin/sudo privileges and are installed system-wide:
 | Google Chrome | Web browser for development and testing |
 | WebStorm | JetBrains IDE for full-stack JavaScript/TypeScript |
 | Node.js (system-level) | Provides npm for the global Claude Code install |
+| Supabase CLI | CLI for Supabase local development and management |
 | Claude Code | AI-powered coding assistant (CLI) |
 
 ### User Script (`user-setup.sh`)

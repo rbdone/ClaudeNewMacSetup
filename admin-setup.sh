@@ -212,7 +212,21 @@ else
     INSTALLED+=("Node.js (system)")
 fi
 
-# ── Step 7: Claude Code ──────────────────────────────────────────────────
+# ── Step 7: Supabase CLI ─────────────────────────────────────────────────
+
+section "Supabase CLI"
+
+if command_exists supabase; then
+    warn "Supabase CLI already installed."
+    SKIPPED+=("Supabase CLI")
+else
+    info "Installing Supabase CLI..."
+    brew install supabase/tap/supabase
+    success "Supabase CLI installed."
+    INSTALLED+=("Supabase CLI")
+fi
+
+# ── Step 8: Claude Code ──────────────────────────────────────────────────
 
 section "Claude Code"
 
