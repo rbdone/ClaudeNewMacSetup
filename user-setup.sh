@@ -154,7 +154,42 @@ else
     fi
 fi
 
-# ── Step 5: Git Configuration ────────────────────────────────────────────
+# ── Step 5: WebStorm CLI shortcut ─────────────────────────────────────────
+
+section "WebStorm CLI Shortcut"
+
+WSTORM_BIN="$HOME/bin/wstorm"
+
+if [[ -x "$WSTORM_BIN" ]]; then
+    warn "wstorm shortcut already exists."
+    SKIPPED+=("wstorm shortcut")
+elif [[ -d "/Applications/WebStorm.app" ]]; then
+    mkdir -p "$HOME/bin"
+    cat > "$WSTORM_BIN" << 'SCRIPT'
+#!/bin/bash
+open -a "WebStorm" "$@"
+SCRIPT
+    chmod +x "$WSTORM_BIN"
+
+    # Ensure ~/bin is in PATH
+    if ! echo "$PATH" | grep -q "$HOME/bin"; then
+        if ! grep -q 'HOME/bin' "$ZSHRC"; then
+            {
+                echo ""
+                echo "# User local binaries"
+                echo 'export PATH="$HOME/bin:$PATH"'
+            } >> "$ZSHRC"
+        fi
+        export PATH="$HOME/bin:$PATH"
+    fi
+
+    success "wstorm shortcut installed. Usage: wstorm [file or directory]"
+    INSTALLED+=("wstorm shortcut")
+else
+    warn "WebStorm not installed. Skipping wstorm shortcut."
+fi
+
+# ── Step 6: Git Configuration ────────────────────────────────────────────
 
 section "Git Configuration"
 
@@ -188,7 +223,7 @@ else
     warn "'git config --global user.email \"you@example.com\"' manually."
 fi
 
-# ── Step 6: Caffeine ─────────────────────────────────────────────────────
+# ── Step 7: Caffeine ─────────────────────────────────────────────────────
 
 section "Caffeine"
 
@@ -228,7 +263,7 @@ info "Launching Caffeine..."
 open -a "$CAFFEINE_APP"
 success "Caffeine is running — Mac will stay awake indefinitely."
 
-# ── Step 7: Set Chrome as Default Browser ─────────────────────────────────
+# ── Step 8: Set Chrome as Default Browser ─────────────────────────────────
 
 section "Default Browser"
 
@@ -242,7 +277,7 @@ else
     warn "Google Chrome not installed. Skipping default browser setup."
 fi
 
-# ── Step 8: Configure Dock ────────────────────────────────────────────────
+# ── Step 9: Configure Dock ────────────────────────────────────────────────
 
 section "Dock Configuration"
 
@@ -273,7 +308,7 @@ killall Dock
 success "Dock configured with Finder, Chrome, WebStorm, and Terminal."
 INSTALLED+=("Dock configuration")
 
-# ── Step 9: Verification ─────────────────────────────────────────────────
+# ── Step 10: Verification ────────────────────────────────────────────────
 
 section "Verification"
 
