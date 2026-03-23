@@ -22,8 +22,8 @@ These are installed per-user with no admin privileges required:
 
 | Tool | Purpose |
 |------|---------|
-| Homebrew PATH | Adds system Homebrew to the user's shell |
 | oh-my-zsh | Zsh framework with git plugin enabled |
+| Homebrew PATH | Adds system Homebrew to the user's shell |
 | nvm | Node Version Manager — install and switch Node versions |
 | Node.js LTS | Latest LTS release via nvm (used for development) |
 | Supabase CLI | CLI for Supabase local development and management |
