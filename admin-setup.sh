@@ -198,51 +198,6 @@ else
     fi
 fi
 
-# ── Step 6: Node.js (system-level via Homebrew) ───────────────────────────
-
-section "Node.js (system-level for Claude Code)"
-
-if brew list node &>/dev/null; then
-    warn "Node.js already installed via Homebrew."
-    SKIPPED+=("Node.js (system)")
-else
-    info "Installing Node.js via Homebrew..."
-    brew install node
-    success "Node.js installed."
-    INSTALLED+=("Node.js (system)")
-fi
-
-# ── Step 7: Supabase CLI ─────────────────────────────────────────────────
-
-section "Supabase CLI"
-
-if command_exists supabase; then
-    warn "Supabase CLI already installed."
-    SKIPPED+=("Supabase CLI")
-else
-    info "Installing Supabase CLI..."
-    brew install supabase/tap/supabase
-    success "Supabase CLI installed."
-    INSTALLED+=("Supabase CLI")
-fi
-
-# ── Step 8: Claude Code ──────────────────────────────────────────────────
-
-section "Claude Code"
-
-if command_exists claude; then
-    warn "Claude Code already installed."
-    SKIPPED+=("Claude Code")
-else
-    info "Installing Claude Code via npm..."
-    npm install -g @anthropic-ai/claude-code
-
-    info "Installing Claude Code native build..."
-    claude install
-    success "Claude Code installed."
-    INSTALLED+=("Claude Code")
-fi
-
 # ── Summary ──────────────────────────────────────────────────────────────
 
 section "Admin Setup Complete"

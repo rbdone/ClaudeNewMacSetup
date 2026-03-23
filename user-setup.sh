@@ -106,7 +106,38 @@ nvm install --lts
 nvm alias default 'lts/*'
 success "Node.js LTS installed and set as default."
 
-# ── Step 4: GitHub CLI (gh) ───────────────────────────────────────────────
+# ── Step 4: Supabase CLI ──────────────────────────────────────────────────
+
+section "Supabase CLI"
+
+if command_exists supabase; then
+    warn "Supabase CLI already installed."
+    SKIPPED+=("Supabase CLI")
+else
+    info "Installing Supabase CLI via npm..."
+    npm install -g supabase
+    success "Supabase CLI installed."
+    INSTALLED+=("Supabase CLI")
+fi
+
+# ── Step 5: Claude Code ──────────────────────────────────────────────────
+
+section "Claude Code"
+
+if command_exists claude; then
+    warn "Claude Code already installed."
+    SKIPPED+=("Claude Code")
+else
+    info "Installing Claude Code via npm..."
+    npm install -g @anthropic-ai/claude-code
+
+    info "Installing Claude Code native build..."
+    claude install
+    success "Claude Code installed."
+    INSTALLED+=("Claude Code")
+fi
+
+# ── Step 6: GitHub CLI (gh) ───────────────────────────────────────────────
 
 section "GitHub CLI (gh)"
 
@@ -154,7 +185,7 @@ else
     fi
 fi
 
-# ── Step 5: WebStorm CLI shortcut ─────────────────────────────────────────
+# ── Step 7: WebStorm CLI shortcut ─────────────────────────────────────────
 
 section "WebStorm CLI Shortcut"
 
@@ -189,7 +220,7 @@ else
     warn "WebStorm not installed. Skipping wstorm shortcut."
 fi
 
-# ── Step 6: Git Configuration ────────────────────────────────────────────
+# ── Step 8: Git Configuration ────────────────────────────────────────────
 
 section "Git Configuration"
 
@@ -223,7 +254,7 @@ else
     warn "'git config --global user.email \"you@example.com\"' manually."
 fi
 
-# ── Step 7: Caffeine ─────────────────────────────────────────────────────
+# ── Step 9: Caffeine ─────────────────────────────────────────────────────
 
 section "Caffeine"
 
@@ -263,7 +294,7 @@ info "Launching Caffeine..."
 open -a "$CAFFEINE_APP"
 success "Caffeine is running — Mac will stay awake indefinitely."
 
-# ── Step 8: Set Chrome as Default Browser ─────────────────────────────────
+# ── Step 10: Set Chrome as Default Browser ────────────────────────────────
 
 section "Default Browser"
 
@@ -277,7 +308,7 @@ else
     warn "Google Chrome not installed. Skipping default browser setup."
 fi
 
-# ── Step 9: Configure Dock ────────────────────────────────────────────────
+# ── Step 11: Configure Dock ───────────────────────────────────────────────
 
 section "Dock Configuration"
 
@@ -308,7 +339,7 @@ killall Dock
 success "Dock configured with Finder, Chrome, WebStorm, and Terminal."
 INSTALLED+=("Dock configuration")
 
-# ── Step 10: Verification ────────────────────────────────────────────────
+# ── Step 12: Verification ────────────────────────────────────────────────
 
 section "Verification"
 
@@ -330,6 +361,7 @@ check_tool "Node.js" "node --version"
 check_tool "npm" "npm --version"
 check_tool "nvm" "nvm --version"
 check_tool "Git" "git --version"
+check_tool "Supabase CLI" "supabase --version"
 check_tool "GitHub CLI" "gh --version"
 check_tool "Zsh" "zsh --version"
 

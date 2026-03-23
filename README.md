@@ -15,9 +15,6 @@ These require admin/sudo privileges and are installed system-wide:
 | Docker Desktop | Container runtime for databases and services |
 | Google Chrome | Web browser for development and testing |
 | WebStorm | JetBrains IDE for full-stack JavaScript/TypeScript |
-| Node.js (system-level) | Provides npm for the global Claude Code install |
-| Supabase CLI | CLI for Supabase local development and management |
-| Claude Code | AI-powered coding assistant (CLI) |
 
 ### User Script (`user-setup.sh`)
 
@@ -29,6 +26,8 @@ These are installed per-user with no admin privileges required:
 | oh-my-zsh | Zsh framework with git plugin enabled |
 | nvm | Node Version Manager — install and switch Node versions |
 | Node.js LTS | Latest LTS release via nvm (used for development) |
+| Supabase CLI | CLI for Supabase local development and management |
+| Claude Code | AI-powered coding assistant (CLI) |
 | GitHub CLI (gh) | GitHub CLI for PRs, issues, and repo management |
 | Git config | Interactive prompts for user.name and user.email |
 | Caffeine | Prevents Mac from sleeping — auto-starts at login, stays on indefinitely |
@@ -60,7 +59,7 @@ chmod +x admin-setup.sh user-setup.sh
 ./admin-setup.sh
 ```
 
-**Do NOT use `sudo`** — run the script as a normal admin user. It will prompt for your password when needed. The script installs Homebrew, Docker Desktop, Google Chrome, WebStorm, Node.js, and Claude Code. It will skip Xcode CLT if already installed.
+**Do NOT use `sudo`** — run the script as a normal admin user. It will prompt for your password when needed. The script installs Homebrew, Docker Desktop, Google Chrome, and WebStorm. It will skip Xcode CLT if already installed.
 
 **Running as admin from a non-admin account:** If you're logged in as a non-admin user but know the admin credentials, use `su` to switch to the admin account first. Use the admin's **short username** (no spaces) rather than their full name — find it with `dscl . -list /Users`:
 
@@ -117,8 +116,7 @@ Both scripts are safe to re-run. They check for existing installations and skip 
 
 ## Design Notes
 
-- **System Node vs. nvm Node:** A system-level Node.js is installed via Homebrew solely to provide npm for the global Claude Code install. Each user gets their own Node.js via nvm, which they fully control.
-- **No global npm packages:** Beyond Claude Code, no npm packages are installed globally. Project dependencies are managed per-project.
+- **All dev tools are per-user:** nvm, Node.js, Supabase CLI, and Claude Code are installed per-user so each developer fully controls their own toolchain without needing admin privileges.
 - **Databases via Docker:** No databases are installed via Homebrew. Use Docker containers for PostgreSQL, MongoDB, Redis, etc.
 - **Homebrew permissions:** The admin script makes Homebrew readable by all users. Non-admin users can use installed binaries but cannot run `brew install` themselves.
 
