@@ -159,25 +159,38 @@ else
         GH_ARCH="macOS_amd64"
     fi
 
-    # Fetch latest version tag from GitHub API
-    GH_VERSION=$(curl -fsSL "https://api.github.com/repos/cli/cli/releases/latest" | grep '"tag_name"' | cut -d'"' -f4 | sed 's/^v//')
-
-    if [[ -z "$GH_VERSION" ]]; then
-        error "Could not determine latest gh version."
-    else
-        GH_TAR="/tmp/gh.tar.gz"
-        curl -fSL -o "$GH_TAR" "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_${GH_ARCH}.tar.gz"
-
-        tar -xzf "$GH_TAR" -C /tmp
-        cp "/tmp/gh_${GH_VERSION}_${GH_ARCH}/bin/gh" "$HOME/bin/gh"
-        chmod +x "$HOME/bin/gh"
-        rm -rf "$GH_TAR" "/tmp/gh_${GH_VERSION}_${GH_ARCH}"
-
-        success "GitHub CLI installed to ~/bin/gh."
-        INSTALLED+=("GitHub CLI")
+    # Resolve the latest version from the releases/latest redirect, which is not
+    # subject to the unauthenticated GitHub API rate limit; fall back to the API.
+    # Both are wrapped so a failed lookup never aborts the whole script (set -e).
+    GH_LATEST_URL=$(curl -fsSLI -o /dev/null -w '%{url_effective}' \
+        "https://github.com/cli/cli/releases/latest" 2>/dev/null || true)
+    GH_VERSION="${GH_LATEST_URL##*/tag/v}"
+    if [[ -z "$GH_VERSION" || "$GH_VERSION" == "$GH_LATEST_URL" ]]; then
+        GH_VERSION=$(curl -fsSL "https://api.github.com/repos/cli/cli/releases/latest" 2>/dev/null \
+            | grep '"tag_name"' | head -1 | cut -d'"' -f4 | sed 's/^v//' || true)
     fi
 
-    ensure_user_path "bin"
+    if [[ -z "$GH_VERSION" ]]; then
+        error "Could not determine latest gh version (network or GitHub rate limit?)."
+        error "Skipping GitHub CLI — install it later with: brew install gh"
+    else
+        # macOS assets ship as .zip (only Linux gets .tar.gz).
+        GH_ZIP="/tmp/gh.zip"
+        GH_DIR="/tmp/gh_${GH_VERSION}_${GH_ARCH}"
+        if curl -fSL -o "$GH_ZIP" \
+                "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_${GH_ARCH}.zip" \
+            && unzip -qo "$GH_ZIP" -d /tmp; then
+            cp "$GH_DIR/bin/gh" "$HOME/bin/gh"
+            chmod +x "$HOME/bin/gh"
+            success "GitHub CLI v${GH_VERSION} installed to ~/bin/gh."
+            INSTALLED+=("GitHub CLI")
+            ensure_user_path "bin"
+        else
+            error "Failed to download or extract GitHub CLI v${GH_VERSION}."
+            error "Skipping GitHub CLI — install it later with: brew install gh"
+        fi
+        rm -rf "$GH_ZIP" "$GH_DIR"
+    fi
 fi
 
 # ── Step 7: WebStorm CLI shortcut ─────────────────────────────────────────
