@@ -62,6 +62,36 @@ brew_prefix() {
     fi
 }
 
+# ── PATH helpers ──────────────────────────────────────────────────────────────
+
+# ensure_user_path <subdir-of-home> [comment]
+#   e.g. ensure_user_path ".local/bin" "Claude Code (native install)"
+# Prepends "$HOME/<subdir>" to PATH for the current session, and appends a
+# matching export line to .zshrc (idempotent). Writes the literal $HOME form so
+# the profile stays portable. Lines are appended, so they land after oh-my-zsh
+# and take precedence. Requires ZSHRC (defaults to ~/.zshrc).
+ensure_user_path() {
+    local subdir="$1"
+    local comment="${2:-User local binaries}"
+    local zshrc="${ZSHRC:-$HOME/.zshrc}"
+    local literal="\$HOME/$subdir"
+    local expanded="$HOME/$subdir"
+
+    touch "$zshrc"
+    if ! grep -qF "export PATH=\"$literal:\$PATH\"" "$zshrc"; then
+        {
+            echo ""
+            echo "# $comment"
+            echo "export PATH=\"$literal:\$PATH\""
+        } >> "$zshrc"
+    fi
+
+    case ":$PATH:" in
+        *":$expanded:"*) ;;
+        *) export PATH="$expanded:$PATH" ;;
+    esac
+}
+
 require_sudo() {
     if ! sudo -n true 2>/dev/null; then
         info "This script requires admin privileges. You may be prompted for your password."

@@ -124,7 +124,7 @@ fi
 
 section "Claude Code"
 
-if command_exists claude; then
+if command_exists claude || [[ -x "$HOME/.local/bin/claude" ]]; then
     warn "Claude Code already installed."
     SKIPPED+=("Claude Code")
 else
@@ -136,6 +136,11 @@ else
     success "Claude Code installed."
     INSTALLED+=("Claude Code")
 fi
+
+# The native `claude install` places the binary in ~/.local/bin, which is not
+# on PATH by default — ensure it is, so `claude` resolves in new terminals.
+# Run unconditionally so re-runs repair a profile that predates this fix.
+ensure_user_path ".local/bin" "Claude Code (native install)"
 
 # ── Step 6: GitHub CLI (gh) ───────────────────────────────────────────────
 
@@ -172,17 +177,7 @@ else
         INSTALLED+=("GitHub CLI")
     fi
 
-    # Ensure ~/bin is in PATH
-    if ! echo "$PATH" | grep -q "$HOME/bin"; then
-        if ! grep -q 'HOME/bin' "$ZSHRC"; then
-            {
-                echo ""
-                echo "# User local binaries"
-                echo 'export PATH="$HOME/bin:$PATH"'
-            } >> "$ZSHRC"
-        fi
-        export PATH="$HOME/bin:$PATH"
-    fi
+    ensure_user_path "bin"
 fi
 
 # ── Step 7: WebStorm CLI shortcut ─────────────────────────────────────────
@@ -202,17 +197,7 @@ open -a "WebStorm" "$@"
 SCRIPT
     chmod +x "$WSTORM_BIN"
 
-    # Ensure ~/bin is in PATH
-    if ! echo "$PATH" | grep -q "$HOME/bin"; then
-        if ! grep -q 'HOME/bin' "$ZSHRC"; then
-            {
-                echo ""
-                echo "# User local binaries"
-                echo 'export PATH="$HOME/bin:$PATH"'
-            } >> "$ZSHRC"
-        fi
-        export PATH="$HOME/bin:$PATH"
-    fi
+    ensure_user_path "bin"
 
     success "wstorm shortcut installed. Usage: wstorm [file or directory]"
     INSTALLED+=("wstorm shortcut")

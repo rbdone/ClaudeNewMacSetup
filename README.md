@@ -126,6 +126,7 @@ Both scripts are safe to re-run. They check for existing installations and skip 
 |---------|----------|
 | `brew: command not found` | Run `eval "$(/opt/homebrew/bin/brew shellenv)"` or open a new terminal |
 | `nvm: command not found` | Run `source ~/.zshrc` or open a new terminal |
+| `claude: command not found` | Run `source ~/.zshrc` or open a new terminal (native install lives in `~/.local/bin`) |
 | `docker: command not found` | Open Docker Desktop from Applications at least once |
 | Docker commands fail | Ensure Docker Desktop is running (check menu bar icon) |
 | Permission denied errors | Confirm an admin has run `admin-setup.sh` first |
